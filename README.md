@@ -1,6 +1,6 @@
 # Prometheus MCP 服务器
 
-这是一个简化版的Prometheus MCP服务器，用于收集和暴露MCP服务器的指标。
+这是一个简化版的Prometheus MCP服务器，用于查询指标提供 ai 分析。
 
 ## 快速开始
 
