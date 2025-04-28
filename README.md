@@ -2,6 +2,33 @@
 
 这是一个简化版的Prometheus MCP服务器，用于收集和暴露MCP服务器的指标。
 
+## 快速开始
+
+### 启动
+
+1. 设置Prometheus地址环境变量：
+```bash
+export PROMETHEUS_URL=your_Prometheus_endpoint
+```
+
+2. 启动服务器：
+```bash
+go run cmd/server/main.go sse
+```
+
+服务器将在`:8081`端口启动，可以通过以下URL访问：
+- http://localhost:8081/sse
+
+3. (可选) 设置日志文件路径：
+```bash
+export APP_LOG_FILE=/path/to/logfile.log
+```
+
+### 测试
+```bash
+npx @modelcontextprotocol/inspector node build/index.js
+```
+
 ## 功能特性
 
 ### AI友好化分析指标
