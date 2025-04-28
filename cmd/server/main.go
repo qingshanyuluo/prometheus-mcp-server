@@ -38,7 +38,7 @@ var (
 			if err != nil {
 				stdlog.Fatal("Failed to initialize logger:", err)
 			}
-			if err := runsseServer(logger); err != nil {
+			if err := runSseServer(logger); err != nil {
 				stdlog.Fatal("failed to run sse server:", err)
 			}
 		},
@@ -77,7 +77,7 @@ func initLogger(outPath string) (*log.Logger, error) {
 	return logger, nil
 }
 
-func runsseServer(logger *log.Logger) error {
+func runSseServer(logger *log.Logger) error {
 	// Create app context
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
