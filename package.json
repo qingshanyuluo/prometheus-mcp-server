@@ -1,0 +1,50 @@
+{
+  "name": "prometheus-mcp-server",
+  "version": "1.0.0",
+  "description": "Prometheus MCP server that handles various tools and resources",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "prometheus-mcp-server": "./dist/index.js"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "build": "npm run build:ts && npm run build:go",
+    "build:ts": "tsc --project tsconfig.json",
+    "build:go": "mkdir -p bin && GOOS=darwin GOARCH=amd64 go build -o bin/prometheus-mcp-server-darwin-amd64 cmd/server/main.go && GOOS=darwin GOARCH=arm64 go build -o bin/prometheus-mcp-server-darwin-arm64 cmd/server/main.go && GOOS=linux GOARCH=amd64 go build -o bin/prometheus-mcp-server-linux-amd64 cmd/server/main.go && GOOS=linux GOARCH=arm64 go build -o bin/prometheus-mcp-server-linux-arm64 cmd/server/main.go && GOOS=windows GOARCH=amd64 go build -o bin/prometheus-mcp-server-windows-amd64.exe cmd/server/main.go",
+    "install:local": "npm run build && npm link"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "cmd",
+    "pkg",
+    "internal",
+    "go.mod",
+    "go.sum"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": [
+    "prometheus",
+    "mcp",
+    "server",
+    "cli",
+    "sse"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/prometheus-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/prometheus-mcp-server/issues"
+  },
+  "homepage": "https://github.com/yourusername/prometheus-mcp-server#readme",
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.3"
+  }
+}

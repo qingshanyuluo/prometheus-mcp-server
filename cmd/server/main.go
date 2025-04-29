@@ -14,26 +14,30 @@ import (
 	"github.com/qingshanyuluo/prometheus-mcp-server/pkg/prometheus"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
+	logFile       string
+	prometheusURL string
+	baseURL       string
+
 	rootCmd = &cobra.Command{
 		Use:   "server",
 		Short: "Prometheus MCP Server",
 		Long:  `A Prometheus MCP server that handles various tools and resources.`,
-		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			// Bind flag to viper
-			viper.BindPFlag("log-file", cmd.PersistentFlags().Lookup("log-file"))
-		},
 	}
 
 	sseCmd = &cobra.Command{
 		Use:   "sse",
 		Short: "Start sse server",
 		Long:  `Start a server that communicates via standard input/output streams using JSON-RPC messages.`,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if prometheusURL == "" {
+				fmt.Println("Error: --prometheus-url is required")
+				os.Exit(1)
+			}
+		},
 		Run: func(cmd *cobra.Command, args []string) {
-			logFile := viper.GetString("log-file")
 			logger, err := initLogger(logFile)
 			if err != nil {
 				stdlog.Fatal("Failed to initialize logger:", err)
@@ -46,19 +50,13 @@ var (
 )
 
 func init() {
-	cobra.OnInitialize(initConfig)
-
 	// Add global flags that will be shared by all commands
-	rootCmd.PersistentFlags().String("log-file", "", "Path to log file")
+	rootCmd.PersistentFlags().StringVar(&logFile, "log-file", "", "Path to log file")
+	rootCmd.PersistentFlags().StringVar(&prometheusURL, "prometheus-url", "", "Prometheus server URL")
+	rootCmd.PersistentFlags().StringVar(&baseURL, "base-url", "http://localhost:8081", "Base URL for the SSE server")
 
 	// Add subcommands
 	rootCmd.AddCommand(sseCmd)
-}
-
-func initConfig() {
-	// Initialize Viper configuration
-	viper.SetEnvPrefix("APP")
-	viper.AutomaticEnv()
 }
 
 func initLogger(outPath string) (*log.Logger, error) {
@@ -82,14 +80,9 @@ func runSseServer(logger *log.Logger) error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	// Create Prometheus client
-	prometheusUrl := os.Getenv("PROMETHEUS_URL")
-	if prometheusUrl == "" {
-		logger.Fatal("PROMETHEUS_URL not set")
-	}
 	// 创建Prometheus客户端
 	promClient, err := api.NewClient(api.Config{
-		Address: prometheusUrl,
+		Address: prometheusURL,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create prometheus client: %w", err)
@@ -100,7 +93,7 @@ func runSseServer(logger *log.Logger) error {
 
 	// Create server
 	promServer := prometheus.NewServer(v1api)
-	sseServer := server.NewSSEServer(promServer, server.WithBaseURL("http://localhost:8081"))
+	sseServer := server.NewSSEServer(promServer, server.WithBaseURL(baseURL))
 
 	if err := sseServer.Start(":8081"); err != nil {
 		log.Fatalf("Server error: %v", err)
