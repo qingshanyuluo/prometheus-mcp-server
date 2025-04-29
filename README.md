@@ -70,6 +70,16 @@ npx @modelcontextprotocol/inspector node build/index.js
    - 示例: 查询过去1小时CPU使用率变化，每15秒一个数据点
    - 返回: 范围查询结果(JSON格式)
 
+6. **query_chart** - 执行PromQL范围查询并生成图表
+   - 参数:
+     - `query` (PromQL查询语句)
+     - `start` (开始时间，格式为RFC3339或Unix时间戳(毫秒))
+     - `end` (结束时间，格式为RFC3339或Unix时间戳(毫秒))
+     - `step` (查询步长，例如'15s'、'1m')
+     - `title` (图表标题，可选)
+   - 示例: 查询过去1小时CPU使用率变化并生成图表
+   - 返回: 图表图片(base64编码的PNG格式)
+
 ### 服务器端
 
 1. 设置Prometheus地址：

@@ -19,6 +19,7 @@ func NewServer(v1api v1.API) *server.MCPServer {
 	s.AddTool(getMetricLabelValues(v1api))
 	s.AddTool(query(v1api))
 	s.AddTool(queryRange(v1api))
+	s.AddTool(queryChart(v1api))
 
 	return s
 }
